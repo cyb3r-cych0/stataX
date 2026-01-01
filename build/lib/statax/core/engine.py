@@ -5,15 +5,12 @@ from statax.core.descriptives import (
     summary_table, grouped_summary, frequency_table
 )
 from statax.output.tables import print_tables, print_table
-from statax.core.stats import ols, logit
+from statax.core.stats import ols_with_data, logit_with_data
 from statax.output.regression import regression_table
 from statax.core.diagnostics import regression_diagnostics
 from statax.core.alias import resolve, resolve_list, validate_aliases
 from statax.output.export import export_regression, export_metadata
 from statax.core.metadata import build_metadata
-
-
-
 
 
 def run(config: Config):
@@ -54,21 +51,21 @@ def run(config: Config):
             )
 
     if config.analysis.model == "ols":
-        model, X_used, y_used = ols(
+        model, X_used, y_used = ols_with_data(
             df,
             outcome,
             predictors,
-            config.analysis.robust_se,
-            config.analysis.missing.strategy
+            robust=config.analysis.robust_se,
+            missing_strategy=config.analysis.missing.strategy
         )
 
     elif config.analysis.model == "logit":
-        model, X_used, y_used = logit(
+        model, X_used, y_used = logit_with_data(
             df,
             outcome,
             predictors,
-            config.analysis.robust_se,
-            config.analysis.missing.strategy
+            robust=config.analysis.robust_se,
+            missing_strategy=config.analysis.missing.strategy
         )
     else:
         raise ValueError("Unsupported model")
@@ -96,4 +93,3 @@ def run(config: Config):
         export_metadata(meta, exp)
 
     print("Missing strategy:", config.analysis.missing.strategy)
-

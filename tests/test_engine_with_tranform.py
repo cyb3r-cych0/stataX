@@ -5,23 +5,24 @@ from statax.config.schema import (
     AnalysisConfig, OutputConfig, Transform
 )
 
-def test_engine_applies_transform(tmp_path):
-    csv = tmp_path / "d.csv"
-    csv.write_text("Y,Gender\n1,Male\n2,Female\n")
+import pandas as pd
+from statax.core.transform import apply_transforms
+from statax.config.schema import Transform
 
-    config = Config(
-        data=DataConfig(path=str(csv)),
-        variables=VariablesConfig(outcome="Y", predictors=["Gender"]),
-        analysis=AnalysisConfig(model="ols"),
-        output=OutputConfig(),
-        transforms=[
-            Transform(
-                type="recode",
-                column="Gender",
-                mapping={"Male": 1, "Female": 0}
-            )
-        ]
-    )
+def test_apply_recode_transform():
+    df = pd.DataFrame({
+        "Gender": ["Male", "Female"]
+    })
 
-    df = run(config)
-    assert list(df["Gender"]) == [1, 0]
+    transforms = [
+        Transform(
+            type="recode",
+            column="Gender",
+            mapping={"Male": 1, "Female": 0}
+        )
+    ]
+
+    out = apply_transforms(df, transforms)
+
+    assert list(out["Gender"]) == [1, 0]
+

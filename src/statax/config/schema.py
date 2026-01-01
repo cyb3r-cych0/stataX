@@ -45,7 +45,7 @@ class VariablesConfig:
 class Transform:
     type: Literal["recode"]
     column: str
-    mapping: Dict[str, str]
+    mapping: Dict[str, str] = field(default_factory=dict)
 
 @dataclass(frozen=True)
 class AnalysisConfig:
@@ -62,5 +62,3 @@ class Config:
     transforms: List[Transform] = field(default_factory=list)
     descriptives: Optional[DescriptivesConfig] = None
     aliases: Optional[AliasConfig] = None
-
-
