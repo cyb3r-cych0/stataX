@@ -10,10 +10,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install package and test deps
+      - name: Install package and dev dependencies
         run: |
-          pip install -e ".[dev]"  # if you added optional-dependencies.dev
-          # or, if not modifying pyproject.toml:
-          # pip install -e .
-          # pip install pandas PyYAML pytest
-      - run: pytest
+          pip install -e ".[dev]"
+      - name: Run tests
+        run: pytest
