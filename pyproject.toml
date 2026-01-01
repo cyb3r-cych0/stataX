@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "statax"
+version = "0.1.0"
+description = "CLI-first statistical analysis tool inspired by Stata/SPSS"
+requires-python = ">=3.12"
+
+[project.scripts]
+statax = "statax.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,2 @@
+[console_scripts]
+statax = statax.cli:main

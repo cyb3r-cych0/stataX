@@ -1,0 +1,68 @@
+data:
+  path: English.csv
+
+#variables:
+#  outcome: "11. How concerned are you about the environmental and health impacts of microplastics?"
+#  predictors:
+#    - "2. Age Range "
+#    - "3. Gender "
+
+aliases:
+  gender: "3. Gender "
+  age: "2. Age Range "
+  concern: "11. How concerned are you about the environmental and health impacts of microplastics?"
+
+variables:
+  outcome: concern
+  predictors:
+    - gender
+
+
+analysis:
+  model: ols
+  robust_se: true
+  missing:
+    strategy: drop_predictors_only # complete_case | drop_predictors_only | mean_impute_predictors
+
+
+#analysis:
+#  model: logit
+
+output:
+  table: true
+  export:
+    format: [csv, latex]
+    out_dir: outputs/
+    overwrite: true
+
+transforms:
+  - type: recode
+    column: "3. Gender "
+    mapping:
+      Male: 1
+      Female: 0
+      "Prefer not to say": null
+
+  - type: recode
+    column: "2. Age Range "
+    mapping:
+      "18–25": 1
+      "26–35": 2
+      "36–45": 3
+      "46–55": 4
+      "56+": 5
+
+  - type: recode
+    column: "11. How concerned are you about the environmental and health impacts of microplastics?"
+    mapping:
+      "Not concerned at all": 1
+      "Slightly concerned": 2
+      "Moderately concerned": 3
+      "Very concerned": 4
+      "Extremely concerned": 5
+
+descriptives:
+  summary: true
+  group_by: "3. Gender "
+  frequencies:
+    - "3. Gender "

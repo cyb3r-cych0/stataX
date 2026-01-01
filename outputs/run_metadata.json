@@ -1,0 +1,86 @@
+{
+  "timestamp": "2026-01-01T14:47:21.937060",
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "config": {
+    "data": {
+      "path": "English.csv",
+      "delimiter": ",",
+      "missing_values": [
+        "",
+        "NA"
+      ]
+    },
+    "variables": {
+      "outcome": "concern",
+      "predictors": [
+        "gender"
+      ]
+    },
+    "analysis": {
+      "model": "ols",
+      "robust_se": true,
+      "missing": {
+        "strategy": "drop_predictors_only"
+      }
+    },
+    "output": {
+      "table": true,
+      "export": {
+        "format": [
+          "csv",
+          "latex"
+        ],
+        "out_dir": "outputs/",
+        "overwrite": true
+      }
+    },
+    "transforms": [
+      {
+        "type": "recode",
+        "column": "3. Gender ",
+        "mapping": {
+          "Male": 1,
+          "Female": 0,
+          "Prefer not to say": null
+        }
+      },
+      {
+        "type": "recode",
+        "column": "2. Age Range ",
+        "mapping": {
+          "18\u201325": 1,
+          "26\u201335": 2,
+          "36\u201345": 3,
+          "46\u201355": 4,
+          "56+": 5
+        }
+      },
+      {
+        "type": "recode",
+        "column": "11. How concerned are you about the environmental and health impacts of microplastics?",
+        "mapping": {
+          "Not concerned at all": 1,
+          "Slightly concerned": 2,
+          "Moderately concerned": 3,
+          "Very concerned": 4,
+          "Extremely concerned": 5
+        }
+      }
+    ],
+    "descriptives": {
+      "summary": true,
+      "group_by": "3. Gender ",
+      "frequencies": [
+        "3. Gender "
+      ]
+    },
+    "aliases": {
+      "map": {
+        "gender": "3. Gender ",
+        "age": "2. Age Range ",
+        "concern": "11. How concerned are you about the environmental and health impacts of microplastics?"
+      }
+    }
+  }
+}

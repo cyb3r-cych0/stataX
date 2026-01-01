@@ -1,0 +1,13 @@
+# csv
+English.csv
+French.csv
+
+# pycache
+*__pycache__/
+*__pycache__
+__pycache__/
+__pycache__
+
+# environment
+.venv
+.venv/
