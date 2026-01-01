@@ -1,5 +1,20 @@
 Metadata-Version: 2.4
-Name: statax
-Version: 0.1.0
+Name: stataX
+Version: 1.0.0
 Summary: CLI-first statistical analysis tool inspired by Stata/SPSS
 Requires-Python: >=3.12
+Requires-Dist: Jinja2==3.1.6
+Requires-Dist: MarkupSafe==3.0.3
+Requires-Dist: numpy==2.4.0
+Requires-Dist: packaging==25.0
+Requires-Dist: pandas==2.3.3
+Requires-Dist: patsy==1.0.2
+Requires-Dist: python-dateutil==2.9.0.post0
+Requires-Dist: pytz==2025.2
+Requires-Dist: PyYAML==6.0.3
+Requires-Dist: scipy==1.16.3
+Requires-Dist: six==1.17.0
+Requires-Dist: statsmodels==0.14.6
+Requires-Dist: tzdata==2025.3
+Provides-Extra: dev
+Requires-Dist: pytest==7.4.2; extra == "dev"

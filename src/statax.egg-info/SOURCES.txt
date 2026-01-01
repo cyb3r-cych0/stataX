@@ -1,4 +1,11 @@
+README.md
 pyproject.toml
+src/stataX.egg-info/PKG-INFO
+src/stataX.egg-info/SOURCES.txt
+src/stataX.egg-info/dependency_links.txt
+src/stataX.egg-info/entry_points.txt
+src/stataX.egg-info/requires.txt
+src/stataX.egg-info/top_level.txt
 src/statax/__init__.py
 src/statax/cli.py
 src/statax.egg-info/PKG-INFO
