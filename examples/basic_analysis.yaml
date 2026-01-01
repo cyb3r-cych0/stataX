@@ -1,16 +1,18 @@
 data:
-  path: survey.csv
+  path: Salary_Data.csv
 
 aliases:
-  concern: "11. How concerned are you about pollution?"
-  gender: "3. Gender "
+  concern: "YearsExperience"
+  salary: "Salary"
 
 variables:
   outcome: concern
-  predictors: [gender]
+  predictors: [salary]
 
 analysis:
   model: ols
+  missing:
+    strategy: complete_case
 
 artifacts:
   plots:
@@ -18,4 +20,4 @@ artifacts:
       column: concern
     - kind: box
       y: concern
-      by: gender
+      by: salary
