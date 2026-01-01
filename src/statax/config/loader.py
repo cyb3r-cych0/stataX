@@ -2,16 +2,9 @@ import json
 import yaml
 from pathlib import Path
 from .schema import (
-    Config,
-    DataConfig,
-    VariablesConfig,
-    AnalysisConfig,
-    OutputConfig,
-    Transform,
-    DescriptivesConfig,
-    MissingConfig,
-    AliasConfig,
-    ExportConfig
+    Config, DataConfig, VariablesConfig, AnalysisConfig, OutputConfig,
+    Transform, DescriptivesConfig, MissingConfig, AliasConfig,
+    ExportConfig, PlotSpec, ArtifactConfig, PlotOutputConfig
 )
 
 class ConfigError(Exception):
@@ -56,7 +49,7 @@ def _parse(raw: dict) -> Config:
         missing=missing_cfg,
     )
 
-    output_raw = raw["output"]
+    output_raw = raw.get("output", {})
 
     export_cfg = ExportConfig()
     if "export" in output_raw:
@@ -77,6 +70,21 @@ def _parse(raw: dict) -> Config:
     if "descriptives" in raw:
         descriptives = DescriptivesConfig(**raw["descriptives"])
 
+    artifacts = None
+    if "artifacts" in raw:
+        plot_specs = []
+        for p in raw["artifacts"].get("plots", []):
+            if "kind" not in p:
+                raise ConfigError("Plot artifact missing 'kind'")
+            plot_specs.append(
+                PlotSpec(kind=p["kind"], spec=p)
+            )
+        artifacts = ArtifactConfig(plots=plot_specs)
+
+    plots_cfg = PlotOutputConfig()
+    if "plots" in raw:
+        plots_cfg = PlotOutputConfig(**raw["plots"])
+
     return Config(
         data=data,
         variables=variables,
@@ -84,6 +92,8 @@ def _parse(raw: dict) -> Config:
         output=output,
         transforms=transforms,
         descriptives=descriptives,
-        aliases=aliases
+        aliases=aliases,
+        artifacts=artifacts,
+        plots=plots_cfg
     )
 

@@ -11,6 +11,9 @@ from statax.core.diagnostics import regression_diagnostics
 from statax.core.alias import resolve, resolve_list, validate_aliases
 from statax.output.export import export_regression, export_metadata
 from statax.core.metadata import build_metadata
+from statax.artifacts.registry import ArtifactRegistry
+from statax.artifacts.table import TableArtifact
+from statax.artifacts.plot import PlotArtifact
 
 
 def run(config: Config):
@@ -19,6 +22,8 @@ def run(config: Config):
         config.data.delimiter,
         config.data.missing_values
     )
+
+    registry = ArtifactRegistry()
 
     alias_map = config.aliases.map if config.aliases else None
 
@@ -70,7 +75,6 @@ def run(config: Config):
     else:
         raise ValueError("Unsupported model")
 
-    print("\n>>> RUNNING REGRESSION DIAGNOSTICS <<<")
     notes = regression_diagnostics(X_used, y_used)
 
     if not notes:
@@ -81,7 +85,47 @@ def run(config: Config):
             print(f" - {n}")
 
     reg_df = regression_table(model, alias_map)
+    registry.add(TableArtifact("regression", reg_df))
+
     print_table("Regression Results", reg_df)
+
+    #  Register plot artifacts from config
+    if config.artifacts and config.artifacts.plots:
+        for i, p in enumerate(config.artifacts.plots):
+            registry.add(
+                PlotArtifact(
+                    artifact_id=f"plot_{i}_{p.kind}",
+                    kind=p.kind,
+                    spec=p.spec,
+                )
+            )
+
+    if config.artifacts:
+        plot_cfg = {
+            "out_dir": config.plots.out_dir,
+            "formats": config.plots.formats,
+            "dpi": config.plots.dpi,
+        }
+
+        if config.artifacts and config.artifacts.plots:
+            for i, p in enumerate(config.artifacts.plots):
+                registry.add(
+                    PlotArtifact(
+                        artifact_id=f"plot_{i}_{p.kind}",
+                        kind=p.kind,
+                        spec=p.spec,
+                    )
+                )
+
+        for a in registry.all():
+            if a.kind == "plot":
+                print("RENDERING:", a.id)
+                a.render(
+                    df=df,
+                    model=model,
+                    cfg=plot_cfg,
+                    resolve=lambda x: resolve(x, alias_map),
+                )
 
     print("Export formats:", config.output.export.format)
 
@@ -93,3 +137,4 @@ def run(config: Config):
         export_metadata(meta, exp)
 
     print("Missing strategy:", config.analysis.missing.strategy)
+    print("✔ Analysis completed successfully")
