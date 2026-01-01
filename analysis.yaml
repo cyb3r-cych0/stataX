@@ -66,3 +66,18 @@ descriptives:
   group_by: "3. Gender "
   frequencies:
     - "3. Gender "
+
+artifacts:
+  plots:
+    - kind: histogram
+      column: concern
+    - kind: box
+      y: concern
+      by: gender
+    - kind: residuals_vs_fitted
+
+plots:
+  out_dir: plots/
+  formats: [png]
+  dpi: 150
+

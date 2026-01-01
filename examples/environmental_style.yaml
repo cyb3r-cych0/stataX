@@ -1,0 +1,16 @@
+data:
+  path: air_quality.csv
+
+variables:
+  outcome: pm25
+  predictors: [temperature, humidity]
+
+analysis:
+  model: ols
+
+artifacts:
+  plots:
+    - kind: scatter
+      x: temperature
+      y: pm25
+    - kind: residuals_vs_fitted

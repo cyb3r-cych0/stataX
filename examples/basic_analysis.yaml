@@ -1,0 +1,21 @@
+data:
+  path: survey.csv
+
+aliases:
+  concern: "11. How concerned are you about pollution?"
+  gender: "3. Gender "
+
+variables:
+  outcome: concern
+  predictors: [gender]
+
+analysis:
+  model: ols
+
+artifacts:
+  plots:
+    - kind: histogram
+      column: concern
+    - kind: box
+      y: concern
+      by: gender

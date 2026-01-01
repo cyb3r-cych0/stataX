@@ -4,12 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "stataX"
-version = "1.0.1"
+version = "1.1.0"
 description = "CLI-first statistical analysis tool inspired by Stata/SPSS"
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 dependencies = [
   "Jinja2==3.1.6",
   "MarkupSafe==3.0.3",
+  "matplotlib==3.10.8",
   "numpy==2.4.0",
   "packaging==25.0",
   "pandas==2.3.3",

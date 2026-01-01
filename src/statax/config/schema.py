@@ -2,6 +2,21 @@ from typing import List, Dict, Optional, Literal
 from dataclasses import dataclass, field
 
 @dataclass(frozen=True)
+class PlotOutputConfig:
+    out_dir: str = "plots"
+    formats: List[str] = field(default_factory=lambda: ["png"])
+    dpi: int = 150
+
+@dataclass(frozen=True)
+class PlotSpec:
+    kind: str
+    spec: Dict
+
+@dataclass(frozen=True)
+class ArtifactConfig:
+    plots: List[PlotSpec] = field(default_factory=list)
+
+@dataclass(frozen=True)
 class ExportConfig:
     format: List[str] = field(default_factory=list)  # csv, latex
     out_dir: str = "outputs"
@@ -62,3 +77,5 @@ class Config:
     transforms: List[Transform] = field(default_factory=list)
     descriptives: Optional[DescriptivesConfig] = None
     aliases: Optional[AliasConfig] = None
+    artifacts: Optional[ArtifactConfig] = None
+    plots: PlotOutputConfig = PlotOutputConfig()

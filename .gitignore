@@ -1,12 +1,30 @@
-# csv
-French.csv
-
-# pycache
-*__pycache__/
-*__pycache__
+# Byte-code files
+*.pyc
 __pycache__/
-__pycache__
 
-# environment
-.venv
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+src/statax.egg-info/
+
+# Virtual environment (optional, but recommended)
+venv/
 .venv/
+env/
+
+# IDE files (e.g., PyCharm)
+.idea/
+.vscode/
+
+# pip install -e . files
+*.egg-info
+
+# pytest
+.pytest_cache
+
+# local files
+outputs/
+plots/
+French.csv

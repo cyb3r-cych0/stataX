@@ -1,15 +1,23 @@
-## 6Config reference
-
 # Config Reference
 
-## analysis.missing.strategy
-- complete_case (default)
-- drop_predictors_only
-- mean_impute_predictors
+## data
+- `path` (required): CSV file path
+- Paths are resolved relative to CWD
 
-## aliases
-Maps short names → raw CSV headers
+## variables
+- `outcome`: dependent variable
+- `predictors`: list of predictors
 
-## output.export.format
-- csv
-- latex
+## transforms
+- `recode`: explicit value mapping
+- No implicit encoding
+
+## artifacts.plots
+Declarative plot definitions.
+Aliases are supported.
+
+## plots
+Controls plot output:
+- `out_dir` (default: plots/)
+- `formats` (default: [png])
+- `dpi` (default: 150)
