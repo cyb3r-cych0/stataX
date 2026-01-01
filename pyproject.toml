@@ -3,10 +3,19 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "statax"
-version = "0.1.0"
+name = "stataX"
+version = "1.0.0"
 description = "CLI-first statistical analysis tool inspired by Stata/SPSS"
 requires-python = ">=3.12"
+dependencies = [
+  "pandas>=2.0",
+  "PyYAML>=6.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.0"
+]
 
 [project.scripts]
 statax = "statax.cli:main"
