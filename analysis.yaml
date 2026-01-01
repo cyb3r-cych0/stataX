@@ -1,12 +1,6 @@
 data:
   path: English.csv
 
-#variables:
-#  outcome: "11. How concerned are you about the environmental and health impacts of microplastics?"
-#  predictors:
-#    - "2. Age Range "
-#    - "3. Gender "
-
 aliases:
   gender: "3. Gender "
   age: "2. Age Range "
@@ -17,13 +11,11 @@ variables:
   predictors:
     - gender
 
-
 analysis:
   model: ols
   robust_se: true
   missing:
     strategy: drop_predictors_only # complete_case | drop_predictors_only | mean_impute_predictors
-
 
 #analysis:
 #  model: logit
@@ -80,4 +72,3 @@ plots:
   out_dir: plots/
   formats: [png]
   dpi: 150
-
