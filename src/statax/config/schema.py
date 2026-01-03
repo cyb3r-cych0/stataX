@@ -1,5 +1,17 @@
-from typing import List, Dict, Optional, Literal
+from typing import List, Dict, Optional, Literal, Tuple
 from dataclasses import dataclass, field
+
+
+@dataclass(frozen=True)
+class ClusterConfig:
+    by: str  # column name (alias-aware)
+
+
+@dataclass(frozen=True)
+class TimeSeriesConfig:
+    date_column: str
+    frequency: Optional[str] = "auto"
+
 
 @dataclass(frozen=True)
 class PlotOutputConfig:
@@ -7,14 +19,17 @@ class PlotOutputConfig:
     formats: List[str] = field(default_factory=lambda: ["png"])
     dpi: int = 150
 
+
 @dataclass(frozen=True)
 class PlotSpec:
     kind: str
     spec: Dict
 
+
 @dataclass(frozen=True)
 class ArtifactConfig:
     plots: List[PlotSpec] = field(default_factory=list)
+
 
 @dataclass(frozen=True)
 class ExportConfig:
@@ -22,14 +37,17 @@ class ExportConfig:
     out_dir: str = "outputs"
     overwrite: bool = False
 
+
 @dataclass(frozen=True)
 class OutputConfig:
     table: bool = True
     export: ExportConfig = ExportConfig()
 
+
 @dataclass(frozen=True)
 class AliasConfig:
     map: Dict[str, str] = field(default_factory=dict)
+
 
 @dataclass(frozen=True)
 class MissingConfig:
@@ -39,11 +57,13 @@ class MissingConfig:
         "mean_impute_predictors"
     ] = "complete_case"
 
+
 @dataclass(frozen=True)
 class DescriptivesConfig:
     summary: bool = False
     group_by: Optional[str] = None
     frequencies: List[str] = field(default_factory=list)
+
 
 @dataclass(frozen=True)
 class DataConfig:
@@ -51,10 +71,14 @@ class DataConfig:
     delimiter: str = ","
     missing_values: List[str] = field(default_factory=lambda: ["", "NA"])
 
+
 @dataclass(frozen=True)
 class VariablesConfig:
     outcome: str
     predictors: List[str]
+    interactions: List[Tuple[str, str]] = field(default_factory=list)
+    fixed_effects: List[str] = field(default_factory=list)
+
 
 @dataclass(frozen=True)
 class Transform:
@@ -62,11 +86,14 @@ class Transform:
     column: str
     mapping: Dict[str, str] = field(default_factory=dict)
 
+
 @dataclass(frozen=True)
 class AnalysisConfig:
-    model: Literal["ols", "logit"]
-    robust_se: bool = True
-    missing: Optional[MissingConfig] = MissingConfig()
+    model: str
+    robust_se: bool = False
+    missing: MissingConfig = MissingConfig()
+    cluster: Optional[ClusterConfig] = None
+
 
 @dataclass(frozen=True)
 class Config:
@@ -79,3 +106,4 @@ class Config:
     aliases: Optional[AliasConfig] = None
     artifacts: Optional[ArtifactConfig] = None
     plots: PlotOutputConfig = PlotOutputConfig()
+    timeseries: Optional[TimeSeriesConfig] = None

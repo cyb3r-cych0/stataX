@@ -1,15 +1,53 @@
 import pandas as pd
 
 def regression_table(model, alias_map=None):
-    # Build base regression table
+    """
+    Build regression table directly from a fitted statsmodels result.
+    model + model.model.exog_names
+    """
+    # column names
+    if hasattr(model.model, "exog_names"):
+        cols = model.model.exog_names
+    else:
+        cols = [f"x{i}" for i in range(len(model.params))]
+
+    # core statistics
+    coef = pd.Series(model.params, index=cols)
+    se = pd.Series(model.bse, index=cols)
+
+    # t for OLS, z for Logit
+    stat = (
+        pd.Series(model.tvalues, index=cols)
+        if hasattr(model, "tvalues")
+        else pd.Series(model.zvalues, index=cols)
+    )
+
+    pval = pd.Series(model.pvalues, index=cols)
+
     df = pd.DataFrame({
-        "coef": model.params,
-        "std_err": model.bse,
-        "t_or_z": model.tvalues,
-        "p_value": model.pvalues,
+        "coef": coef,
+        "std_err": se,
+        "t_or_z": stat,
+        "p_value": pval,
     })
 
-    # Apply alias labels if provided
+    # optional confidence intervals
+    if hasattr(model, "conf_int"):
+        ci = model.conf_int()
+        if not isinstance(ci, pd.DataFrame):
+            ci = pd.DataFrame(
+                ci,
+                index=cols,
+                columns=["ci_low", "ci_high"],
+            )
+        else:
+            ci.columns = ["ci_low", "ci_high"]
+            ci.index = cols
+
+
+        df = pd.concat([df, ci], axis=1)
+
+    # alias labeling
     if alias_map:
         new_index = []
         for name in df.index:

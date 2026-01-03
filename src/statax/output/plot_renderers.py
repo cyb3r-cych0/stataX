@@ -61,3 +61,34 @@ def residuals_vs_fitted(model, cfg, name):
     ax.set_ylabel("Residuals")
     ax.set_title("Residuals vs Fitted")
     save(fig, cfg["out_dir"], name, cfg["formats"], cfg["dpi"])
+
+def line(df, x, y, cfg, name):
+    fig, ax = plt.subplots()
+    # x is date, y must be numeric
+    xs = df[x]
+    ys = pd.to_numeric(df[y], errors="coerce")
+
+    if ys.dropna().empty:
+        raise ValueError(
+            f"Line plot requires numeric data for '{y}', but no numeric values found."
+        )
+    ax.plot(xs, ys)
+    ax.set_xlabel(x)
+    ax.set_ylabel(y)
+    ax.set_title(f"{y} over time")
+    save(fig, cfg["out_dir"], name, cfg["formats"], cfg["dpi"])
+
+def rolling_mean(df, x, y, window, cfg, name):
+    fig, ax = plt.subplots()
+    xs = df[x]
+    ys = pd.to_numeric(df[y], errors="coerce")
+
+    if ys.dropna().empty:
+        raise ValueError(
+            f"Rolling mean requires numeric data for '{y}', but no numeric values found."
+        )
+    ax.plot(xs, ys.rolling(window).mean())
+    ax.set_xlabel(x)
+    ax.set_ylabel(y)
+    ax.set_title(f"{y} ({window}-period rolling mean)")
+    save(fig, cfg["out_dir"], name, cfg["formats"], cfg["dpi"])
