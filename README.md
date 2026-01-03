@@ -1,29 +1,70 @@
 # stataX
 
-A CLI-first, reproducible statistical analysis engine in Python, inspired by Stata/SPSS workflows.
+**stataX** is a CLI-first, reproducible statistical analysis engine in Python, inspired by Stata/SPSS-style workflows but designed for modern, configuration-driven research.
 
-## Key Features
-- YAML/JSON config files (do-file equivalent)
-- Deterministic data pipeline
-- Explicit transformations and missing-data strategies
-- Human-readable tables (CLI)
-- OLS and Logit regression with diagnostics
-- Alias support for long survey variables
-- CSV & LaTeX exports
-- Full run metadata for reproducibility
-- Windows- and CI-safe
+It prioritizes **explicit statistical decisions, honest failures, and reproducibility** over automation or black-box convenience.
+
+---
+
+## Why stataX?
+
+Most Python statistical workflows are:
+- notebook-heavy
+- implicit about data handling
+- difficult to reproduce exactly
+
+stataX is different.
+
+**stataX is a “do-file engine” for Python.**
+
+You describe *what* you want in a YAML/JSON file, and stataX executes it deterministically.
+
+---
+
+## Core Features
+
+-  **YAML / JSON configs** (Stata do-file equivalent)
+-  **Deterministic execution pipeline**
+-  **Explicit missing-data strategies**
+-  **Alias system** for long / survey-style column names
+-  **OLS & Logit regression**
+    - interactions
+    - fixed effects
+    - robust & clustered standard errors
+-  **Regression diagnostics**
+-  **Artifact-based plotting** (histograms, residuals, rolling means, etc.)
+-  **CSV & LaTeX exports**
+-  **Full run metadata for reproducibility**
+-  **CLI-first, CI-safe, Windows-safe**
+
+---
 
 ## Installation
+
+**python >= 3.14** recommended
 ```bash
 pip install -e .
 ```
 
-## Basic Usage
+---
+
+## Usage
 ```bash
 statax run analysis.yaml
 ```
+**stataX will:**
+1. Load data
+2. Validate schema
+3. Apply transforms
+4. Run descriptives
+5. Handle missing data
+6. Fit model
+7. Run diagnostics
+8. Export results + metadata
 
-## Example Config
+---
+
+### Minimal Example
 ```yaml
 data:
   path: survey.csv
@@ -46,140 +87,81 @@ output:
     format: [csv, latex]
     out_dir: outputs/
 ```
-**Outputs**
+
+### Outputs
+
 - `regression.csv`
 - `regression.tex`
-- `run_metadata.json`
+- `run_metadata.json` 
 
-## Philosophy
-**stataX favors explicit statistical decisions, honest failures, and reproducibility over automation.**
+---
 
-## Reproducibility
+## Reproducibility Guarantees
 
-### `docs/REPRODUCIBILITY.md`
-```yaml
-# Reproducibility
+stataX guarantees bit-for-bit reproducibility given:
 
-stataX guarantees reproducibility under the following conditions:
+ - same input CSV
+ - same config file
+ - same stataX version
 
-- Same input CSV
-- Same config file
-- Same statax version
+Each run produces run_metadata.json containing:
+- timestamp
+- OS & Python version
+- stataX version
+- full resolved configuration
 
-Each run produces `run_metadata.json` containing:
-- Timestamp
-- Python version
-- OS/platform
-- Full config used
-
-This file can be included in:
+This file is suitable for:
 - replication packages
-- journal submissions
 - audit trails
-```
+
+---
 
 ## Architecture Overview
 
-### `docs/ARCHITECTURE.md`
-```md
-# Architecture
-
 Pipeline order:
 1. Load CSV
-2. Validate schema
+2. Validate columns & aliases
 3. Apply transforms
-4. Descriptives
+4. Descriptive statistics
 5. Missing-data handling
-6. Regression
+6. Model fitting
 7. Diagnostics
-8. Export + metadata
+8. Artifact rendering
+9. Export & metadata
 
-Design principles:
-- No silent coercion
-- No implicit encoding
-- CLI-first
-- Engine reusable by API
-```
+The engine is reusable programmatically, but the CLI is the primary interface.
 
-## CLI Reference
+---
 
-### `docs/CLI.md`
-```md
-# CLI Reference
+## What stataX Does NOT Do (by design)
 
-## Run analysis
-```bash
-statax run analysis.yaml
-```
-**Exit Behaviour**
-- Non-zero exit on config or data errors
-- Clear diagnostics for statistical failures
-- 
-## Config Reference
-
-### `docs/CONFIG.md`
-```yaml
-# Config Reference
-
-## analysis.missing.strategy
-- complete_case (default)
-- drop_predictors_only
-- mean_impute_predictors
-
-## aliases
-Maps short names → raw CSV headers
-
-## output.export.format
-- csv
-- latex
-```
-
-## CI Hardening
-
-### `.github/workflows/ci.yml`
-```yaml
-name: CI
-
-on: [push, pull_request]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: pip install -e .
-      - run: pip install pytest
-      - run: pytest
-
-```
-
-## Release Notes
-
-### `CHANGELOG.md`
-```md
-# Changelog
-
-## v1.0.0
-- Stable statistical core
-- Explicit missing-data strategies
-- Alias support
-- CSV and LaTeX export
-- Reproducible run metadata
-```
-
-## License
-
-`LCENSE`
-
-**What v1.0 explicitly does NOT do** 
-```md
-- No automatic encoding
+- No automatic categorical encoding
 - No survey weights
 - No ML models
 - No GUI
-```
+- No notebook dependency
 
+stataX is not a replacement for pandas or statsmodels —
+it is an execution layer above them.
 
+---
+
+## Project Status
+- v1.2.0 — Stable core
+- Statistical core hardened
+- Extensive failure-mode tests
+- Safe for applied research & analysis
+
+---
+
+## License
+
+See LICENSE.
+
+---
+
+## Roadmap
+
+- v1.3.x — extended plotting & summaries
+- v1.4.x — panel / time-series models
+- v2.0 — long-term API stabilization

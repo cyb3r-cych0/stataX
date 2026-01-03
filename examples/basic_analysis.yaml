@@ -1,5 +1,5 @@
 data:
-  path: Salary_Data.csv
+  path: datasets/Salary.csv
 
 aliases:
   concern: "YearsExperience"
@@ -12,7 +12,7 @@ variables:
 analysis:
   model: ols
   missing:
-    strategy: complete_case
+    strategy: drop_predictors_only
 
 artifacts:
   plots:

@@ -4,7 +4,8 @@ from pathlib import Path
 from .schema import (
     Config, DataConfig, VariablesConfig, AnalysisConfig, OutputConfig,
     Transform, DescriptivesConfig, MissingConfig, AliasConfig,
-    ExportConfig, PlotSpec, ArtifactConfig, PlotOutputConfig
+    ExportConfig, PlotSpec, ArtifactConfig, PlotOutputConfig,
+    TimeSeriesConfig, ClusterConfig
 )
 
 class ConfigError(Exception):
@@ -31,31 +32,47 @@ def load_config(path: str) -> Config:
 
 def _parse(raw: dict) -> Config:
     data = DataConfig(**raw["data"])
-    variables = VariablesConfig(**raw["variables"])
+
+    vars_raw = raw["variables"]
+    variables = VariablesConfig(
+        outcome=vars_raw["outcome"],
+        predictors=vars_raw["predictors"],
+        interactions=[(str(p[0]), str(p[1])) for p in vars_raw.get("interactions", [])],
+        fixed_effects=[str(x) for x in vars_raw.get("fixed_effects", [])],
+    )
+
+    for p in vars_raw.get("interactions", []):
+        if not isinstance(p, (list, tuple)) or len(p) != 2:
+            raise ConfigError("Each interaction must be a pair of variable names")
 
     aliases = None
     if "aliases" in raw:
         aliases = AliasConfig(map=raw["aliases"])
 
     analysis_raw = raw["analysis"]
-
     missing_cfg = MissingConfig()
     if "missing" in analysis_raw:
         missing_cfg = MissingConfig(**analysis_raw["missing"])
 
+    cluster = None
+    if "cluster" in analysis_raw:
+        cluster = ClusterConfig(
+            by=analysis_raw["cluster"]["by"]
+        )
+
     analysis = AnalysisConfig(
         model=analysis_raw["model"],
-        robust_se=analysis_raw.get("robust_se", True),
+        robust_se=analysis_raw.get("robust_se", False),
         missing=missing_cfg,
+        cluster=cluster,
     )
 
     output_raw = raw.get("output", {})
-
     export_cfg = ExportConfig()
     if "export" in output_raw:
         export_cfg = ExportConfig(**output_raw["export"])
 
-    print(OutputConfig.__annotations__)
+    # print(OutputConfig.__annotations__) --verbose logging
 
     output = OutputConfig(
         table=output_raw.get("table", True),
@@ -85,6 +102,10 @@ def _parse(raw: dict) -> Config:
     if "plots" in raw:
         plots_cfg = PlotOutputConfig(**raw["plots"])
 
+    timeseries = None
+    if "timeseries" in raw:
+        timeseries = TimeSeriesConfig(**raw["timeseries"])
+
     return Config(
         data=data,
         variables=variables,
@@ -94,6 +115,7 @@ def _parse(raw: dict) -> Config:
         descriptives=descriptives,
         aliases=aliases,
         artifacts=artifacts,
-        plots=plots_cfg
+        plots=plots_cfg,
+        timeseries=timeseries
     )
 

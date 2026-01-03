@@ -1,72 +1,43 @@
 data:
-  path: English.csv
+  path: datasets/Dubai_Air_Quality.csv
 
 aliases:
-  gender: "3. Gender "
-  age: "2. Age Range "
-  concern: "11. How concerned are you about the environmental and health impacts of microplastics?"
+  date: "Date"
+  so2: "SO2"
+  no2: "NO2"
+  city: "City"
+  concern: "PM2.5"
+
+timeseries:
+  date_column: date
+  frequency: auto
 
 variables:
   outcome: concern
-  predictors:
-    - gender
+  predictors: [no2]
+  fixed_effects:
+    - city
 
 analysis:
   model: ols
-  robust_se: true
-  missing:
-    strategy: drop_predictors_only # complete_case | drop_predictors_only | mean_impute_predictors
+  robust_se: true        # HC3 if no clustering
+  cluster:
+    by: city             # alias or raw column
 
-#analysis:
-#  model: logit
 
 output:
   table: true
   export:
-    format: [csv, latex]
+    format: [ csv, latex ]
     out_dir: outputs/
     overwrite: true
 
-transforms:
-  - type: recode
-    column: "3. Gender "
-    mapping:
-      Male: 1
-      Female: 0
-      "Prefer not to say": null
-
-  - type: recode
-    column: "2. Age Range "
-    mapping:
-      "18–25": 1
-      "26–35": 2
-      "36–45": 3
-      "46–55": 4
-      "56+": 5
-
-  - type: recode
-    column: "11. How concerned are you about the environmental and health impacts of microplastics?"
-    mapping:
-      "Not concerned at all": 1
-      "Slightly concerned": 2
-      "Moderately concerned": 3
-      "Very concerned": 4
-      "Extremely concerned": 5
-
-descriptives:
-  summary: true
-  group_by: "3. Gender "
-  frequencies:
-    - "3. Gender "
-
 artifacts:
   plots:
-    - kind: histogram
-      column: concern
-    - kind: box
+    - kind: rolling_mean
+      x: date
       y: concern
-      by: gender
-    - kind: residuals_vs_fitted
+      window: 7
 
 plots:
   out_dir: plots/

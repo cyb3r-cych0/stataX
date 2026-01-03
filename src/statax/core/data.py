@@ -29,3 +29,15 @@ def validate_columns(df: pd.DataFrame, outcome: str, predictors: list[str]):
 
     if missing:
         raise DataError(f"Missing columns in CSV: {missing}")
+
+def parse_dates(df, date_column):
+    if date_column not in df.columns:
+        raise DataError(f"Date column not found: {date_column}")
+
+    df = df.copy()
+    df[date_column] = pd.to_datetime(df[date_column], errors="coerce")
+
+    if df[date_column].isna().all():
+        raise DataError(f"Date column '{date_column}' could not be parsed")
+
+    return df
