@@ -1,5 +1,8 @@
 from statax.artifacts.base import Artifact
 from statax.output import plot_renderers as R
+from statax.output.plot_theme import apply_theme
+from statax.output.export import export_plot_metadata
+
 
 class PlotArtifact(Artifact):
     def __init__(self, artifact_id: str, kind: str, spec: dict):
@@ -9,6 +12,8 @@ class PlotArtifact(Artifact):
 
     def render(self, *, df, model, cfg, resolve):
         name = self.id
+        theme = self.spec.get("style", {}).get("theme")
+        apply_theme(theme)
 
         if self.plot_kind == "histogram":
             R.histogram(
@@ -70,5 +75,63 @@ class PlotArtifact(Artifact):
                 name
             )
 
+        elif self.plot_kind == "categorical_profile":
+            R.categorical_profile(
+                self.spec,
+                cfg,
+                name,
+                df=df,
+                resolve=resolve
+            )
+
+        elif self.plot_kind == "coef_plot":
+            R.coef_plot(
+                self.spec,
+                cfg,
+                name,
+                model=model
+            )
+
+        elif self.plot_kind == "heatmap":
+            R.heatmap(
+                df,
+                self.spec,
+                cfg,
+                name
+            )
+
+        elif self.plot_kind == "pie":
+            R.pie(
+                df,
+                self.spec,
+                cfg,
+                name
+            )
+
+        elif self.plot_kind == "likert":
+            R.likert(
+                df,
+                self.spec,
+                cfg,
+                name
+            )
+
+        elif self.plot_kind == "diverging_likert":
+            R.diverging_likert(
+                df,
+                resolve(self.spec["column"]),
+                self.spec,
+                cfg,
+                name,
+                group_by=resolve(self.spec["group_by"]) if "group_by" in self.spec else None,
+            )
+
         else:
             raise ValueError(f"Unsupported plot plot_kind: {self.plot_kind}")
+
+        # ---- export figure metadata (caption, spec) ----
+        export_plot_metadata(
+            cfg["out_dir"],
+            name,
+            self.spec
+        )

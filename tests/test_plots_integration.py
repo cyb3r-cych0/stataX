@@ -1,5 +1,4 @@
 def test_plot_files_created(tmp_path):
-    import pandas as pd
     from statax.core.engine import run
     from statax.config.loader import load_config
 

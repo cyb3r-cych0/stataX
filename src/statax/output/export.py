@@ -26,3 +26,16 @@ def export_metadata(meta: dict, cfg):
     if p.exists() and not cfg.overwrite:
         raise FileExistsError(p)
     p.write_text(json.dumps(meta, indent=2))
+
+def export_plot_metadata(out_dir, name, spec):
+    meta = {
+        "kind": spec.get("kind"),
+        "caption": spec.get("caption"),
+        "source_column": spec.get("column"),
+        "group_by": spec.get("group_by"),
+        "scale": spec.get("scale"),
+        "normalize": spec.get("normalize"),
+    }
+
+    path = Path(out_dir) / f"{name}.meta.json"
+    path.write_text(json.dumps(meta, indent=2))
