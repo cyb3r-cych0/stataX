@@ -138,32 +138,38 @@ def run(config: Config):
             missing_strategy=config.analysis.missing.strategy
         )
 
+    elif config.analysis.model == "none":
+        model = None
+        X_used = None
+        y_used = None
+
     else:
         raise ValueError("Unsupported model")
 
-    notes = regression_diagnostics(X_used, y_used)
-    if not notes:
-        print("✓ No regression diagnostics triggered")
-    else:
-        print("⚠ Regression diagnostics:")
-        for n in notes:
-            print(f" - {n}")
+    if model is not None:
+        notes = regression_diagnostics(X_used, y_used)
+        if not notes:
+            print("✓ No regression diagnostics triggered")
+        else:
+            print("⚠ Regression diagnostics:")
+            for n in notes:
+                print(f" - {n}")
 
-    reg_df = regression_table(
-        model,
-        alias_map
-    )
+        reg_df = regression_table(
+            model,
+            alias_map
+        )
 
-    registry.add(
-        TableArtifact(
-            "regression",
+        registry.add(
+            TableArtifact(
+                "regression",
+                reg_df
+            )
+        )
+        print_table(
+            "Regression Results",
             reg_df
         )
-    )
-    print_table(
-        "Regression Results",
-        reg_df
-    )
 
     if config.artifacts and config.artifacts.plots:
         for i, p in enumerate(config.artifacts.plots):

@@ -1,0 +1,369 @@
+# =========================
+# DATA
+# =========================
+data:
+  path: datasets/English.csv
+
+# =========================
+# ALIASES
+# Used everywhere EXCEPT transforms
+# =========================
+aliases:
+  date: "Timestamp"
+  country: "1. Country of Residence "
+  age: "2. Age Range "
+  gender: "3. Gender "
+  education: "4. Highest Educational Level "
+  occupation: "5. Occupation / Professional Role"
+  sector: "6. Sector of Work"
+  concern: "11. How concerned are you about the environmental and health impacts of microplastics?"
+
+# =========================
+# TRANSFORMS
+# MUST use RAW column names
+# =========================
+transforms:
+  # Likert concern → numeric scale
+  - type: recode
+    column: "11. How concerned are you about the environmental and health impacts of microplastics?"
+    mapping:
+      "Extremely concerned": 5
+      "Moderately concerned": 4
+      "Slightly concerned": 3
+      "Not concerned": 2
+      "I donâ€™t know enough to answer": 1
+
+  # Gender → binary (for regression only)
+  - type: recode
+    column: "3. Gender "
+    mapping:
+      "Male": 1
+      "Female": 0
+
+  # Education → ordered scale
+  - type: recode
+    column: "4. Highest Educational Level "
+    mapping:
+      "No formal Education": 1
+      "Primary Education": 2
+      "Secondary Education": 3
+      "Vocational/Technical training": 4
+      "Diploma or equivalent": 5
+      "Bachelor’s degree": 6
+      "Master’s degree or higher": 7
+
+# =========================
+# VARIABLES (MODEL)
+# =========================
+variables:
+  outcome: concern
+  predictors:
+#    - "2. Age Range "
+    - "3. Gender "
+    - "4. Highest Educational Level "
+
+# =========================
+# ANALYSIS
+# =========================
+analysis:
+  model: ols
+  robust_se: true
+  missing:
+    strategy: complete_case
+
+# =========================
+# DESCRIPTIVES
+# =========================
+descriptives:
+  summary: true
+  group_by: "1. Country of Residence "
+  frequencies:
+    - "3. Gender "
+    - "4. Highest Educational Level "
+
+# =========================
+# ARTIFACTS — PLOTS
+# =========================
+artifacts:
+  plots:
+
+    # -------------------------
+    # Phase 13A — Categorical profile
+    # -------------------------
+    - kind: categorical_profile
+      from_data:
+        column: "1. Country of Residence "
+        normalize: percent
+      style:
+        theme: classic
+        show_values: true
+        font_scale: 0.9
+      caption: "Distribution of respondents by country of residence"
+
+    # -------------------------
+    # Phase 13B — Coefficient plot
+    # -------------------------
+    - kind: coef_plot
+      ci: 0.95
+      drop:
+        - const
+      caption: "OLS coefficients for predictors of concern about microplastics"
+
+    # -------------------------
+    # Phase 13C — Heatmap (categorical × categorical)
+    # -------------------------
+    - kind: heatmap
+      x: "3. Gender "
+      y: "11. How concerned are you about the environmental and health impacts of microplastics?"
+      normalize: row
+      cmap: "Blues"
+      caption: "Concern levels by gender (row-normalized)"
+
+    # -------------------------
+    # Phase 13C — Pie chart
+    # -------------------------
+    - kind: pie
+      column: "3. Gender "
+      donut: true
+      top_n: 5
+      other_label: "Other"
+      caption: "Gender composition of respondents"
+
+    # -------------------------
+    # Phase 13C — Likert (raw labels)
+    # -------------------------
+    - kind: likert
+      column: "11. How concerned are you about the environmental and health impacts of microplastics?"
+      scale:
+        - Extremely concerned
+        - Moderately concerned
+        - Slightly concerned
+        - Not concerned
+        - I donâ€™t know enough to answer
+      normalize: true
+      caption: "Overall concern about microplastics (Likert distribution)"
+
+    # -------------------------
+    # Phase 13C — Likert by gender (numeric)
+    # -------------------------
+    - kind: likert
+      column: "11. How concerned are you about the environmental and health impacts of microplastics?"
+      group_by: "3. Gender "
+      scale:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      labels:
+        1: "I don’t know enough"
+        2: "Not concerned"
+        3: "Slightly concerned"
+        4: "Moderately concerned"
+        5: "Extremely concerned"
+      normalize: true
+      caption: "Concern about microplastics by gender"
+
+# =========================
+# PLOT OUTPUT
+# =========================
+plots:
+  out_dir: plots/
+  formats: [png]
+  dpi: 300
+
+# =========================
+# OUTPUT TABLES & EXPORTS
+# =========================
+output:
+  table: true
+  export:
+    format: [csv, latex]
+    out_dir: outputs/
+    overwrite: true
+
+
+#data:
+#  path: datasets/English.csv
+#
+## Aliases (used everywhere EXCEPT transforms)
+#aliases:
+#  date: "Timestamp"
+#  country: "1. Country of Residence "
+#  age: "2. Age Range "
+#  gender: "3. Gender "
+#  education: "4. Highest Educational Level "
+#  concern: "11. How concerned are you about the environmental and health impacts of microplastics?"
+#  concern_label: "11. How concerned are you about the environmental and health impacts of microplastics?"
+#
+## Transforms MUST use raw column names
+#transforms:
+#  # Numeric recode for regression
+#  - type: recode
+#    column: "11. How concerned are you about the environmental and health impacts of microplastics?"
+#    mapping:
+#      "Extremely concerned": 5
+#      "Moderately concerned": 4
+#      "Slightly concerned": 3
+#      "Not concerned": 2
+#      "I don't know enough to answer": 1
+#
+#  - type: recode
+#    column: "3. Gender "
+#    mapping:
+#      "Male": 1
+#      "Female": 0
+#
+#  - type: recode
+#    column: "2. Age Range "
+#    mapping:
+#      "Under 18": 1
+#      "25–34": 2
+#      "35–44": 3
+#      "45–54": 4
+#      "55-64": 5
+#      "65 and above": 6
+#
+#  - type: recode
+#    column: "4. Highest Educational Level "
+#    mapping:
+#      "No formal Education": 1
+#      "Primary Education": 2
+#      "Secondary Education": 3
+#      "Vocational/Technical training": 4
+#      "Diploma or equivalent": 5
+#      "Bachelor’s degree": 6
+#      "Master’s degree or higher": 7
+#
+#variables:
+#  outcome: concern
+#  predictors:
+#    - age
+#    - gender
+#    - education
+#
+#analysis:
+#  model: ols
+#  robust_se: true
+#  missing:
+#    strategy: complete_case
+#
+#descriptives:
+#  summary: true
+#
+#artifacts:
+#  plots:
+#    # Phase 13A — categorical profile
+#    - kind: categorical_profile
+#      from_data:
+#        column: "3. Gender "
+#        normalize: percent
+#      style:
+#        theme: clean
+##        show_values: true
+##        font_scale: 1.0
+#
+#    # Phase 13B — coefficient plot
+#    - kind: coef_plot
+#      ci: 0.95
+#      drop:
+#        - const
+#
+#    # Phase 13C — heatmap (labels, not numeric)
+#    - kind: heatmap
+#      x: "3. Gender "
+#      y: "11. How concerned are you about the environmental and health impacts of microplastics?"
+#      normalize: row
+#      cmap: "Blues"
+#
+#    # Phase 13C — pie
+#    - kind: pie
+#      column: "3. Gender "
+#      top_n: 6
+#      other_label: "Other"
+#      donut: true
+#
+#    # Phase 13C — Likert (overall, numeric)
+#    - kind: likert
+#      column: "11. How concerned are you about the environmental and health impacts of microplastics?"
+#      scale: [1, 2, 3, 4, 5]
+#      labels:
+#        1: "I don’t know enough to answer"
+#        2: "Not concerned"
+#        3: "Slightly concerned"
+#        4: "Moderately concerned"
+#        5: "Extremely concerned"
+#      normalize: true
+#
+#    # Phase 13C-4 — Likert by gender
+#    - kind: likert
+#      column: "11. How concerned are you about the environmental and health impacts of microplastics?"
+#      scale: [1, 2, 3, 4, 5]
+#      group_by: "3. Gender "
+#      labels:
+#        1: "I don’t know enough to answer"
+#        2: "Not concerned"
+#        3: "Slightly concerned"
+#        4: "Moderately concerned"
+#        5: "Extremely concerned"
+#      normalize: true
+#
+#    # Phase 13C-4 — Likert by country (guarded)
+#    - kind: likert
+#      column: "11. How concerned are you about the environmental and health impacts of microplastics?"
+#      scale: [1, 2, 3, 4, 5]
+#      group_by: "1. Country of Residence"
+#      max_groups: 10
+#      labels:
+#        1: "I don’t know enough to answer"
+#        2: "Not concerned"
+#        3: "Slightly concerned"
+#        4: "Moderately concerned"
+#        5: "Extremely concerned"
+#      normalize: true
+#      theme: journal
+#      caption: "Distribution of concern about microplastics"
+#
+#
+#    - kind: diverging_likert
+#      column: concern
+#      scale: [ 1, 2, 3, 4, 5 ]
+#      center: 3
+#      labels:
+#        1: "I don’t know enough to answer"
+#        2: "Not concerned"
+#        3: "Neutral"
+#        4: "Moderately concerned"
+#        5: "Extremely concerned"
+#      normalize: true
+#      theme: journal
+#      caption: "Distribution of concern about microplastics"
+#
+#
+#
+#    - kind: diverging_likert
+#      column: concern
+#      scale: [ 1, 2, 3, 4, 5 ]
+#      center: 3
+#      group_by: gender
+#      labels:
+#        1: "I don’t know enough to answer"
+#        2: "Not concerned"
+#        3: "Neutral"
+#        4: "Moderately concerned"
+#        5: "Extremely concerned"
+#      normalize: true
+#      theme: journal
+#      caption: "Distribution of concern about microplastics"
+#
+#plots:
+#  out_dir: plots/
+#  formats: [png]
+#  dpi: 300
+#
+#output:
+#  table: true
+#  export:
+#    format: [csv, latex]
+#    out_dir: outputs/
+#    overwrite: true

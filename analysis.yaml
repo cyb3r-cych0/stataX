@@ -1,45 +1,174 @@
 data:
-  path: datasets/Dubai_Air_Quality.csv
+  path: datasets/English.csv
 
 aliases:
-  date: "Date"
-  so2: "SO2"
-  no2: "NO2"
-  city: "City"
-  concern: "PM2.5"
-
-timeseries:
-  date_column: date
-  frequency: auto
+  country: "1. Country of Residence "
+  age: "2. Age Range "
+  gender: "3. Gender "
+  education: "4. Highest Educational Level "
+  occupation: "5. Occupation / Professional Role"
 
 variables:
-  outcome: concern
-  predictors: [no2]
-  fixed_effects:
-    - city
+  outcome: country
+  predictors: []
 
 analysis:
-  model: ols
-  robust_se: true        # HC3 if no clustering
-  cluster:
-    by: city             # alias or raw column
+  model: none
 
-
-output:
-  table: true
-  export:
-    format: [ csv, latex ]
-    out_dir: outputs/
-    overwrite: true
 
 artifacts:
   plots:
-    - kind: rolling_mean
-      x: date
-      y: concern
-      window: 7
+
+    # ------------------
+    # Demographics
+    # ------------------
+
+    - kind: categorical_profile
+      from_data:
+        column: "1. Country of Residence "
+        normalize: percent
+
+    - kind: categorical_profile
+      from_data:
+        column: "2. Age Range "
+        normalize: percent
+
+    - kind: categorical_profile
+      from_data:
+        column: "3. Gender "
+        normalize: percent
+
+    - kind: categorical_profile
+      from_data:
+        column: "4. Highest Educational Level "
+        normalize: percent
+
+    - kind: categorical_profile
+      from_data:
+        column: "5. Occupation / Professional Role"
+        normalize: percent
+
+    - kind: categorical_profile
+      from_data:
+        column: "6. Sector of Work"
+        normalize: percent
+
+    # ------------------
+    # Awareness / Observation
+    # ------------------
+
+    - kind: categorical_profile
+      from_data:
+        column: "7. Do you observe visible plastic pollution (macroplastics) in your community? "
+        normalize: percent
+
+    - kind: multiselect_profile
+      column: "8. In what environmental settings do you most often encounter plastic waste? (Select all that apply) "
+      normalize: percent
+      top_n: 10
+
+    - kind: categorical_profile
+      from_data:
+        column: "9. Are you aware of microplastics as an environmental or health issue? "
+        normalize: percent
+
+    - kind: multiselect_profile
+      column: "10. From your perspective, which ecosystems are most affected by plastic pollution in your area? (Select all that apply) "
+      normalize: percent
+      top_n: 10
+
+    # ------------------
+    # Likert — concern & knowledge
+    # ------------------
+
+    - kind: likert
+      column: "11. How concerned are you about the environmental and health impacts of microplastics?"
+      scale:
+        - Not concerned
+        - Slightly concerned
+        - I don't know enough to answer
+        - Moderately concerned
+        - Extremely concerned
+      neutral: "I don't know enough to answer"
+      normalize: true
+
+
+    - kind: likert
+      column: "12. How knowledgeable are you about the causes and effects of microplastic pollution? "
+      scale:
+        - Not knowledgeable
+        - Heard about it but unsure
+        - Somewhat knowledgeable
+        - Very knowledgeable
+      neutral: "Heard about it but unsure"
+      normalize: true
+
+    # ------------------
+    # Media & Information
+    # ------------------
+
+    - kind: multiselect_profile
+      column: "13. What sources of information influence your understanding of microplastics? (Select all that apply) "
+      normalize: percent
+      top_n: 10
+
+    - kind: categorical_profile
+      from_data:
+        column: "14. Do you believe microplastics affect human health?"
+        normalize: percent
+
+    - kind: categorical_profile
+      from_data:
+        column: "16. Have you seen or heard media stories on microplastics or plastic pollution in the past 6 months? "
+        normalize: percent
+
+    - kind: multiselect_profile
+      column: "17. Which platforms most effectively communicate environmental issues in your country? (Rank top 3) "
+      normalize: percent
+      top_n: 10
+
+    - kind: multiselect_profile
+      column: "18. What messages do you remember most from media coverage? (Select all that apply) "
+      normalize: percent
+      top_n: 10
+
+    - kind: likert
+      column: "19. To what extent has media coverage influenced your behavior or concern?"
+      scale:
+        - Not at all
+        - Slightly
+        - Moderately
+        - Very significantly
+      normalize: true
+
+    # ------------------
+    # Circular economy
+    # ------------------
+
+    - kind: categorical_profile
+      from_data:
+        column: "20. Have you heard of the circular economy concept?"
+        normalize: percent
+
+    - kind: multiselect_profile
+      column: "21. Which actions do you associate with a circular economy? (Select all that apply)"
+      normalize: percent
+      top_n: 10
+
+    - kind: multiselect_profile
+      column: "22. Which sectors in your country are actively working toward circular economy practices? (Select all that apply)"
+      normalize: percent
+      top_n: 10
+
+    - kind: multiselect_profile
+      column: "24. Which measures do you support to address plastic pollution in your country? (Choose up to 3) "
+      normalize: percent
+      top_n: 10
 
 plots:
-  out_dir: plots/
+  out_dir: plots/full_survey/
   formats: [png]
-  dpi: 150
+  dpi: 300
+
+output:
+  table: false

@@ -5,6 +5,9 @@ def regression_table(model, alias_map=None):
     Build regression table directly from a fitted statsmodels result.
     model + model.model.exog_names
     """
+    if model is None:
+        raise ValueError("regression_table() called with model=None")
+
     # column names
     if hasattr(model.model, "exog_names"):
         cols = model.model.exog_names
