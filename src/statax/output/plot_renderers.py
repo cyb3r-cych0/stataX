@@ -475,3 +475,64 @@ def diverging_likert(df, column, spec, cfg, name, group_by=None):
 
     save(fig, cfg["out_dir"], name, cfg["formats"], cfg["dpi"])
 
+def multiselect_profile(df, spec, cfg, name):
+    col = spec["column"]
+    sep = spec.get("separator", ";")
+    normalize = spec.get("normalize", "percent")
+    sort = spec.get("sort", "desc")
+    top_n = spec.get("top_n")
+    orientation = spec.get("style", {}).get("orientation", "horizontal")
+    show_values = spec.get("style", {}).get("show_values", True)
+
+    # explode multiselect column
+    exploded = (
+        df[col]
+        .dropna()
+        .astype(str)
+        .str.split(sep)
+        .explode()
+        .str.strip()
+    )
+
+    counts = exploded.value_counts()
+
+    if normalize == "percent":
+        values = counts / counts.sum() * 100
+        xlabel = "Percentage"
+    else:
+        values = counts
+        xlabel = "Count"
+
+    if sort == "desc":
+        values = values.sort_values(ascending=False)
+    elif sort == "asc":
+        values = values.sort_values(ascending=True)
+
+    if top_n:
+        values = values.head(int(top_n))
+
+    labels = values.index.tolist()
+    nums = values.values
+
+    fig, ax = plt.subplots(
+        figsize=(8, 0.5 * len(labels) + 1)
+    )
+
+    if orientation == "horizontal":
+        ax.barh(labels, nums)
+        ax.invert_yaxis()
+        ax.set_xlabel(xlabel)
+        if show_values:
+            for i, v in enumerate(nums):
+                ax.text(v, i, f"{v:.1f}", va="center", ha="left")
+    else:
+        ax.bar(labels, nums)
+        ax.set_ylabel(xlabel)
+        if show_values:
+            for i, v in enumerate(nums):
+                ax.text(i, v, f"{v:.1f}", ha="center", va="bottom")
+
+    ax.set_title(col)
+
+    save(fig, cfg["out_dir"], name, cfg["formats"], cfg["dpi"])
+

@@ -126,6 +126,14 @@ class PlotArtifact(Artifact):
                 group_by=resolve(self.spec["group_by"]) if "group_by" in self.spec else None,
             )
 
+        elif self.plot_kind == "multiselect_profile":
+            R.multiselect_profile(
+                df,
+                self.spec,
+                cfg,
+                name
+            )
+
         else:
             raise ValueError(f"Unsupported plot plot_kind: {self.plot_kind}")
 

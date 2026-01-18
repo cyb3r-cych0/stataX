@@ -1,184 +1,174 @@
 data:
   path: datasets/English.csv
 
-# Aliases (used everywhere EXCEPT transforms)
 aliases:
-  date: "Timestamp"
   country: "1. Country of Residence "
   age: "2. Age Range "
   gender: "3. Gender "
   education: "4. Highest Educational Level "
-  concern: "11. How concerned are you about the environmental and health impacts of microplastics?"
-  concern_label: "11. How concerned are you about the environmental and health impacts of microplastics?"
-
-# Transforms MUST use raw column names
-transforms:
-  # Numeric recode for regression
-  - type: recode
-    column: "11. How concerned are you about the environmental and health impacts of microplastics?"
-    mapping:
-      "Extremely concerned": 5
-      "Moderately concerned": 4
-      "Slightly concerned": 3
-      "Not concerned": 2
-      "I don't know enough to answer": 1
-
-  - type: recode
-    column: "3. Gender "
-    mapping:
-      "Male": 1
-      "Female": 0
-
-  - type: recode
-    column: "2. Age Range "
-    mapping:
-      "Under 18": 1
-      "25–34": 2
-      "35–44": 3
-      "45–54": 4
-      "55-64": 5
-      "65 and above": 6
-
-  - type: recode
-    column: "4. Highest Educational Level "
-    mapping:
-      "No formal Education": 1
-      "Primary Education": 2
-      "Secondary Education": 3
-      "Vocational/Technical training": 4
-      "Diploma or equivalent": 5
-      "Bachelor’s degree": 6
-      "Master’s degree or higher": 7
+  occupation: "5. Occupation / Professional Role"
 
 variables:
-  outcome: concern
-  predictors:
-    - age
-    - gender
-    - education
+  outcome: country
+  predictors: []
 
 analysis:
-  model: ols
-  robust_se: true
-  missing:
-    strategy: complete_case
+  model: none
 
-descriptives:
-  summary: true
 
 artifacts:
   plots:
-    # Phase 13A — categorical profile
+
+    # ------------------
+    # Demographics
+    # ------------------
+
+    - kind: categorical_profile
+      from_data:
+        column: "1. Country of Residence "
+        normalize: percent
+
+    - kind: categorical_profile
+      from_data:
+        column: "2. Age Range "
+        normalize: percent
+
     - kind: categorical_profile
       from_data:
         column: "3. Gender "
         normalize: percent
-      style:
-        theme: clean
-#        show_values: true
-#        font_scale: 1.0
 
-    # Phase 13B — coefficient plot
-    - kind: coef_plot
-      ci: 0.95
-      drop:
-        - const
+    - kind: categorical_profile
+      from_data:
+        column: "4. Highest Educational Level "
+        normalize: percent
 
-    # Phase 13C — heatmap (labels, not numeric)
-    - kind: heatmap
-      x: "3. Gender "
-      y: "11. How concerned are you about the environmental and health impacts of microplastics?"
-      normalize: row
-      cmap: "Blues"
+    - kind: categorical_profile
+      from_data:
+        column: "5. Occupation / Professional Role"
+        normalize: percent
 
-    # Phase 13C — pie
-    - kind: pie
-      column: "3. Gender "
-      top_n: 6
-      other_label: "Other"
-      donut: true
+    - kind: categorical_profile
+      from_data:
+        column: "6. Sector of Work"
+        normalize: percent
 
-    # Phase 13C — Likert (overall, numeric)
+    # ------------------
+    # Awareness / Observation
+    # ------------------
+
+    - kind: categorical_profile
+      from_data:
+        column: "7. Do you observe visible plastic pollution (macroplastics) in your community? "
+        normalize: percent
+
+    - kind: multiselect_profile
+      column: "8. In what environmental settings do you most often encounter plastic waste? (Select all that apply) "
+      normalize: percent
+      top_n: 10
+
+    - kind: categorical_profile
+      from_data:
+        column: "9. Are you aware of microplastics as an environmental or health issue? "
+        normalize: percent
+
+    - kind: multiselect_profile
+      column: "10. From your perspective, which ecosystems are most affected by plastic pollution in your area? (Select all that apply) "
+      normalize: percent
+      top_n: 10
+
+    # ------------------
+    # Likert — concern & knowledge
+    # ------------------
+
     - kind: likert
       column: "11. How concerned are you about the environmental and health impacts of microplastics?"
-      scale: [1, 2, 3, 4, 5]
-      labels:
-        1: "I don’t know enough to answer"
-        2: "Not concerned"
-        3: "Slightly concerned"
-        4: "Moderately concerned"
-        5: "Extremely concerned"
+      scale:
+        - Not concerned
+        - Slightly concerned
+        - I don't know enough to answer
+        - Moderately concerned
+        - Extremely concerned
+      neutral: "I don't know enough to answer"
       normalize: true
 
-    # Phase 13C-4 — Likert by gender
+
     - kind: likert
-      column: "11. How concerned are you about the environmental and health impacts of microplastics?"
-      scale: [1, 2, 3, 4, 5]
-      group_by: "3. Gender "
-      labels:
-        1: "I don’t know enough to answer"
-        2: "Not concerned"
-        3: "Slightly concerned"
-        4: "Moderately concerned"
-        5: "Extremely concerned"
+      column: "12. How knowledgeable are you about the causes and effects of microplastic pollution? "
+      scale:
+        - Not knowledgeable
+        - Heard about it but unsure
+        - Somewhat knowledgeable
+        - Very knowledgeable
+      neutral: "Heard about it but unsure"
       normalize: true
 
-    # Phase 13C-4 — Likert by country (guarded)
+    # ------------------
+    # Media & Information
+    # ------------------
+
+    - kind: multiselect_profile
+      column: "13. What sources of information influence your understanding of microplastics? (Select all that apply) "
+      normalize: percent
+      top_n: 10
+
+    - kind: categorical_profile
+      from_data:
+        column: "14. Do you believe microplastics affect human health?"
+        normalize: percent
+
+    - kind: categorical_profile
+      from_data:
+        column: "16. Have you seen or heard media stories on microplastics or plastic pollution in the past 6 months? "
+        normalize: percent
+
+    - kind: multiselect_profile
+      column: "17. Which platforms most effectively communicate environmental issues in your country? (Rank top 3) "
+      normalize: percent
+      top_n: 10
+
+    - kind: multiselect_profile
+      column: "18. What messages do you remember most from media coverage? (Select all that apply) "
+      normalize: percent
+      top_n: 10
+
     - kind: likert
-      column: "11. How concerned are you about the environmental and health impacts of microplastics?"
-      scale: [1, 2, 3, 4, 5]
-      group_by: "1. Country of Residence"
-      max_groups: 10
-      labels:
-        1: "I don’t know enough to answer"
-        2: "Not concerned"
-        3: "Slightly concerned"
-        4: "Moderately concerned"
-        5: "Extremely concerned"
+      column: "19. To what extent has media coverage influenced your behavior or concern?"
+      scale:
+        - Not at all
+        - Slightly
+        - Moderately
+        - Very significantly
       normalize: true
-      theme: journal
-      caption: "Distribution of concern about microplastics"
 
+    # ------------------
+    # Circular economy
+    # ------------------
 
-    - kind: diverging_likert
-      column: concern
-      scale: [ 1, 2, 3, 4, 5 ]
-      center: 3
-      labels:
-        1: "I don’t know enough to answer"
-        2: "Not concerned"
-        3: "Neutral"
-        4: "Moderately concerned"
-        5: "Extremely concerned"
-      normalize: true
-      theme: journal
-      caption: "Distribution of concern about microplastics"
+    - kind: categorical_profile
+      from_data:
+        column: "20. Have you heard of the circular economy concept?"
+        normalize: percent
 
+    - kind: multiselect_profile
+      column: "21. Which actions do you associate with a circular economy? (Select all that apply)"
+      normalize: percent
+      top_n: 10
 
+    - kind: multiselect_profile
+      column: "22. Which sectors in your country are actively working toward circular economy practices? (Select all that apply)"
+      normalize: percent
+      top_n: 10
 
-    - kind: diverging_likert
-      column: concern
-      scale: [ 1, 2, 3, 4, 5 ]
-      center: 3
-      group_by: gender
-      labels:
-        1: "I don’t know enough to answer"
-        2: "Not concerned"
-        3: "Neutral"
-        4: "Moderately concerned"
-        5: "Extremely concerned"
-      normalize: true
-      theme: journal
-      caption: "Distribution of concern about microplastics"
+    - kind: multiselect_profile
+      column: "24. Which measures do you support to address plastic pollution in your country? (Choose up to 3) "
+      normalize: percent
+      top_n: 10
 
 plots:
-  out_dir: plots/
+  out_dir: plots/full_survey/
   formats: [png]
   dpi: 300
 
 output:
-  table: true
-  export:
-    format: [csv, latex]
-    out_dir: outputs/
-    overwrite: true
+  table: false

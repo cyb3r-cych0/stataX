@@ -1,0 +1,94 @@
+data:
+  path: datasets/English.csv
+
+# Aliases used by artifacts
+aliases:
+  country: "1. Country of Residence "
+  age: "2. Age Range "
+  gender: "3. Gender "
+  education: "4. Highest Educational Level "
+
+variables:
+  # Required by schema, but UNUSED in Option A
+  outcome: country
+  predictors: [age]
+
+analysis:
+  model: none   # <-- CRITICAL (no regression)
+
+artifacts:
+  plots:
+    # -------------------------
+    # Q1 — Country of Residence
+    # -------------------------
+    - kind: categorical_profile
+      from_data:
+        column: "1. Country of Residence "
+        normalize: percent
+      style:
+        theme: classic
+        show_values: true
+
+    - kind: pie
+      column: country
+      top_n: 10
+      other_label: "Other"
+      donut: true
+
+    # -------------------------
+    # Q2 — Age Range
+    # -------------------------
+    - kind: bar
+      column: age
+      order:
+        - "Under 18"
+        - "18–24"
+        - "25–34"
+        - "35–44"
+        - "45–54"
+        - "55–64"
+        - "65 and above"
+
+    - kind: categorical_profile
+      from_data:
+        column: "2. Age Range "
+        normalize: percent
+
+    # -------------------------
+    # Q3 — Gender
+    # -------------------------
+    - kind: categorical_profile
+      from_data:
+        column: "3. Gender "
+        normalize: percent
+
+    - kind: pie
+      column: gender
+      donut: true
+
+    # -------------------------
+    # Q4 — Education Level
+    # -------------------------
+    - kind: bar
+      column: education
+      order:
+        - "No formal Education"
+        - "Primary Education"
+        - "Secondary Education"
+        - "Vocational/Technical training"
+        - "Diploma or equivalent"
+        - "Bachelor’s degree"
+        - "Master’s degree or higher"
+
+    - kind: categorical_profile
+      from_data:
+        column: "4. Highest Educational Level "
+        normalize: percent
+
+plots:
+  out_dir: plots/q1_q4/
+  formats: [png]
+  dpi: 300
+
+output:
+  table: false
