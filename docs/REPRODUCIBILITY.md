@@ -1,19 +1,39 @@
+# Reproducibility 
 
-# Reproducibility
+stataX guarantees reproducibility when:
 
-stataX guarantees reproducibility under the following conditions:
+- Input CSV is unchanged
+- YAML config is unchanged
+- stataX version is unchanged
 
-- Same input CSV
-- Same config file
-- Same stataX version
+---
 
-Each run produces `run_metadata.json` containing:
+## What Is Recorded
+
+Each run emits `run_metadata.json` containing:
+
 - Timestamp
 - Python version
-- OS/platform
-- Full config used
+- OS / platform
+- Full resolved config
+- Artifact list
+- Version hash
 
-This file can be included in:
-- replication packages
-- journal submissions
-- audit trails
+---
+
+## Intended Use
+
+- Academic replication packages
+- Journal submissions
+- Audit trails
+- Internal analytics reviews
+
+---
+
+## What Is Not Guaranteed
+
+- Floating-point equality across platforms
+- Identical font rendering across OS
+- Automatic encoding normalization
+
+These are explicitly out of scope.

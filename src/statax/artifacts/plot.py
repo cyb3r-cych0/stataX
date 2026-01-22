@@ -137,7 +137,6 @@ class PlotArtifact(Artifact):
         else:
             raise ValueError(f"Unsupported plot plot_kind: {self.plot_kind}")
 
-        # ---- export figure metadata (caption, spec) ----
         export_plot_metadata(
             cfg["out_dir"],
             name,

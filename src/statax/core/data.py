@@ -4,22 +4,19 @@ from pathlib import Path
 class DataError(Exception):
     pass
 
-def load_csv(path: str, delimiter: str, missing_values: list[str]) -> pd.DataFrame:
-    p = Path(path)
-    if not p.exists():
-        raise DataError(f"CSV not found: {path}")
-
-    df = pd.read_csv(
-        p,
-        delimiter=delimiter,
-        na_values=missing_values,
-        encoding="utf-8"
-    )
-
-    if df.columns.duplicated().any():
-        raise DataError("Duplicate column names detected")
-
-    return df
+def load_csv(path, delimiter=",", missing_values=None, encoding="utf-8"):
+    try:
+        return pd.read_csv(
+            path,
+            delimiter=delimiter,
+            na_values=missing_values,
+            encoding=encoding,
+        )
+    except UnicodeDecodeError as e:
+        raise DataError(
+            f"Failed to decode CSV using encoding '{encoding}'. "
+            "Try encoding='cp1252' or 'latin1'."
+        ) from e
 
 def validate_columns(df: pd.DataFrame, outcome: str, predictors: list[str]):
     missing = []
