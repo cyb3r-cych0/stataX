@@ -70,6 +70,7 @@ class DataConfig:
     path: str
     delimiter: str = ","
     missing_values: List[str] = field(default_factory=lambda: ["", "NA"])
+    encoding: str = "utf-8"
 
 
 @dataclass(frozen=True)

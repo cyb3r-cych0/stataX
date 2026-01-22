@@ -31,6 +31,11 @@ def load_config(path: str) -> Config:
         raise ConfigError(f"Invalid config structure: {e}")
 
 def _parse(raw: dict) -> Config:
+    data_raw = raw["data"]
+
+    if "encoding" in data_raw and not isinstance(data_raw["encoding"], str):
+        raise ConfigError("data.encoding must be a string")
+
     data = DataConfig(**raw["data"])
 
     vars_raw = raw["variables"]

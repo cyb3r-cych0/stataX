@@ -1,5 +1,6 @@
 data:
-  path: datasets/English.csv
+  path: datasets/Combined.csv
+  encoding: latin1
 
 aliases:
   country: "1. Country of Residence "
@@ -12,9 +13,9 @@ variables:
   outcome: country
   predictors: []
 
+# ========== ols , logit , none ============
 analysis:
-  model: none
-
+  model: none # no regression calculations
 
 artifacts:
   plots:
@@ -166,7 +167,7 @@ artifacts:
       top_n: 10
 
 plots:
-  out_dir: plots/full_survey/
+  out_dir: plots/plastic_pollution/
   formats: [png]
   dpi: 300
 

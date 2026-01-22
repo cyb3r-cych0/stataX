@@ -1,48 +1,59 @@
 # stataX
 
-**stataX** is a CLI-first, reproducible statistical analysis engine in Python, inspired by Stata/SPSS-style workflows but designed for modern, configuration-driven research.
+**stataX** is a CLI-first, reproducible statistical analysis and visualization engine in Python, inspired by Stata/SPSS workflows but designed for modern, config-driven research pipelines.
 
-It prioritizes **explicit statistical decisions, honest failures, and reproducibility** over automation or black-box convenience.
-
----
-
-## Why stataX?
-
-Most Python statistical workflows are:
-- notebook-heavy
-- implicit about data handling
-- difficult to reproduce exactly
-
-stataX is different.
-
-**stataX is a “do-file engine” for Python.**
-
-You describe *what* you want in a YAML/JSON file, and stataX executes it deterministically.
+It emphasizes **explicit decisions, honest failures, and publication-ready outputs**.
 
 ---
 
-## Core Features
+## Current Status
 
--  **YAML / JSON configs** (Stata do-file equivalent)
--  **Deterministic execution pipeline**
--  **Explicit missing-data strategies**
--  **Alias system** for long / survey-style column names
--  **OLS & Logit regression**
-    - interactions
-    - fixed effects
-    - robust & clustered standard errors
--  **Regression diagnostics**
--  **Artifact-based plotting** (histograms, residuals, rolling means, etc.)
--  **CSV & LaTeX exports**
--  **Full run metadata for reproducibility**
--  **CLI-first, CI-safe, Windows-safe**
+**v1.3.0 — Stable**  
+✔ Statistical core  
+✔ Visualization system  
+✔ Survey / questionnaire workflows supported  
+✔ Encoding-safe (Windows / Excel compatible)  
+
+---
+
+## Key Features
+
+### Core
+- YAML-based analysis configs
+- Deterministic, reproducible pipeline
+- Explicit missing-data strategies
+- Robust error handling (no silent coercion)
+- Alias system for messy survey headers
+- Run metadata export
+
+### Models
+- OLS (robust + clustered SE)
+- Logit (binary outcomes)
+- None (plots only)
+- Full diagnostics & inference tables
+
+### Visualization (Artifacts)
+- Histogram, bar, box, scatter, line
+- **Categorical profile**
+- **Multiselect profile (survey questions)**
+- **Likert (stacked)**
+- **Diverging Likert (centered)**
+- Heatmaps
+- Pie / donut charts
+- Coefficient plots (CI-aware)
+
+All figures are **PNG export-ready** for reports and papers.
 
 ---
 
 ## Installation
 
-**python >= 3.14** recommended
+`python >= 3.14` recommended
+
+**Clone the repository** `git clone https://github.com/cyb3r-cych0/stataX.git`
+
 ```bash
+cd path/to/stataX/
 pip install -e .
 ```
 
@@ -67,90 +78,96 @@ statax run analysis.yaml
 ### Minimal Example
 ```yaml
 data:
-  path: survey.csv
+  path: datasets/example.csv
+  encoding: latin1   # Excel-safe
 
 aliases:
-  gender: "3. Gender "
-
-variables:
-  outcome: concern
-  predictors: [gender]
+  gender: "Gender"
+  concern: "How concerned are you about the environmental and health impacts of microplastics?"
 
 analysis:
-  model: ols
-  missing:
-    strategy: drop_predictors_only
+  model: none    # visualization-only mode
 
-output:
-  table: true
-  export:
-    format: [csv, latex]
-    out_dir: outputs/
+artifacts:
+  plots:
+    - kind: categorical_profile
+      from_data:
+        column: gender
+        normalize: percent
+
+    - kind: multiselect_profile
+      column: "In what environmental settings do you most often encounter plastic waste? (Select all that apply) "
+      normalize: percent
+
+    - kind: diverging_likert
+      column: concern
+      scale:
+        - Not concerned
+        - Slightly concerned
+        - I don’t know enough to answer
+        - Moderately concerned
+        - Extremely concerned
+      neutral: "I don’t know enough to answer"
+      normalize: true
+
+plots:
+  out_dir: plots/
+  formats: [png]
+  dpi: 300
 ```
 
 ### Outputs
 
-- `regression.csv`
-- `regression.tex`
-- `run_metadata.json` 
+- `plots/*.png`
+- `regression.csv`/`.tex` (if model enabled)
+- `run_metadata.json`
 
 ---
 
-## Reproducibility Guarantees
+## Philosophy
 
-stataX guarantees bit-for-bit reproducibility given:
+**stataX favors:**
 
- - same input CSV
- - same config file
- - same stataX version
-
-Each run produces run_metadata.json containing:
-- timestamp
-- OS & Python version
-- stataX version
-- full resolved configuration
-
-This file is suitable for:
-- replication packages
-- audit trails
+- Explicit assumptions
+- Readable failures
+- Reproducibility over automation
+- Survey-aware visual analytics
 
 ---
 
-## Architecture Overview
+## Known Constraints
 
-Pipeline order:
-1. Load CSV
-2. Validate columns & aliases
-3. Apply transforms
-4. Descriptive statistics
-5. Missing-data handling
-6. Model fitting
-7. Diagnostics
-8. Artifact rendering
-9. Export & metadata
-
-The engine is reusable programmatically, but the CLI is the primary interface.
-
----
-
-## What stataX Does NOT Do (by design)
-
-- No automatic categorical encoding
-- No survey weights
-- No ML models
+- No automatic encoding detection (must be explicit)
+- No survey weights (yet)
 - No GUI
-- No notebook dependency
-
-stataX is not a replacement for pandas or statsmodels —
-it is an execution layer above them.
+- No ML models
+- No silent category collapsing
 
 ---
 
-## Project Status
-- v1.2.0 — Stable core
-- Statistical core hardened
-- Extensive failure-mode tests
-- Safe for applied research & analysis
+## CI & Stability
+
+- Pytest-based regression suite
+- Windows-safe paths & encodings
+- Deterministic plot rendering
+
+---
+
+## Versioning Note
+
+### `stataX v1.3.0`
+
+**Check the `docs` folder to read more**
+
+---
+
+## Roadmap
+
+- v1.4.x — PDF / LaTeX figure export
+- v1.5.x — Weighted survey analysis
+- v1.6.x — Faceted Likert by group
+- v1.7.x — Report Templates
+- v2.0 — long-term API stabilization
 
 ---
 
@@ -159,9 +176,3 @@ it is an execution layer above them.
 See LICENSE.
 
 ---
-
-## Roadmap
-
-- v1.3.x — extended plotting & summaries
-- v1.4.x — panel / time-series models
-- v2.0 — long-term API stabilization

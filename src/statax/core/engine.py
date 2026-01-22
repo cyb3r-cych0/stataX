@@ -21,7 +21,8 @@ def run(config: Config):
     df = load_csv(
         config.data.path,
         config.data.delimiter,
-        config.data.missing_values
+        config.data.missing_values,
+        config.data.encoding
     )
 
     registry = ArtifactRegistry()
