@@ -42,13 +42,13 @@ def histogram(df, column, cfg, name):
     fig, ax = plt.subplots()
     s = _numeric_series(df, column, "Histogram")
     s.hist(ax=ax)
-    ax.set_title(f"Histogram: {column}")
+    ax.set_title(f"Histogram: {column}", pad=12)
     save(fig, cfg["out_dir"], name, cfg["formats"], cfg["dpi"])
 
 def bar(df, column, cfg, name):
     fig, ax = plt.subplots()
     df[column].value_counts(dropna=False).plot.bar(ax=ax)
-    ax.set_title(f"Bar: {column}")
+    ax.set_title(f"Bar: {column}", pad=12)
     save(fig, cfg["out_dir"], name, cfg["formats"], cfg["dpi"])
 
 def box(df, y, by, cfg, name):
@@ -57,7 +57,7 @@ def box(df, y, by, cfg, name):
     tmp = df.copy()
     tmp[y] = s
     tmp.boxplot(column=y, by=by, ax=ax)
-    ax.set_title(f"Box: {y} by {by}")
+    ax.set_title(f"Box: {y} by {by}", pad=12)
     plt.suptitle("")
     save(fig, cfg["out_dir"], name, cfg["formats"], cfg["dpi"])
 
@@ -68,7 +68,7 @@ def scatter(df, x, y, cfg, name):
     ax.scatter(xs, ys)
     ax.set_xlabel(x)
     ax.set_ylabel(y)
-    ax.set_title(f"Scatter: {x} vs {y}")
+    ax.set_title(f"Scatter: {x} vs {y}", pad=12)
     save(fig, cfg["out_dir"], name, cfg["formats"], cfg["dpi"])
 
 def residuals_vs_fitted(model, cfg, name):
@@ -77,7 +77,7 @@ def residuals_vs_fitted(model, cfg, name):
     ax.axhline(0, linestyle="--")
     ax.set_xlabel("Fitted values")
     ax.set_ylabel("Residuals")
-    ax.set_title("Residuals vs Fitted")
+    ax.set_title("Residuals vs Fitted", pad=12)
     save(fig, cfg["out_dir"], name, cfg["formats"], cfg["dpi"])
 
 def line(df, x, y, cfg, name):
@@ -93,7 +93,7 @@ def line(df, x, y, cfg, name):
     ax.plot(xs, ys)
     ax.set_xlabel(x)
     ax.set_ylabel(y)
-    ax.set_title(f"{y} over time")
+    ax.set_title(f"{y} over time", pad=12)
     save(fig, cfg["out_dir"], name, cfg["formats"], cfg["dpi"])
 
 def rolling_mean(df, x, y, window, cfg, name):
@@ -108,7 +108,7 @@ def rolling_mean(df, x, y, window, cfg, name):
     ax.plot(xs, ys.rolling(window).mean())
     ax.set_xlabel(x)
     ax.set_ylabel(y)
-    ax.set_title(f"{y} ({window}-period rolling mean)")
+    ax.set_title(f"{y} ({window}-period rolling mean)", pad=12)
     save(fig, cfg["out_dir"], name, cfg["formats"], cfg["dpi"])
 
 def categorical_profile(spec, cfg, name, df=None, resolve=None):
@@ -197,10 +197,21 @@ def categorical_profile(spec, cfg, name, df=None, resolve=None):
     ax.set_ylabel(y_label)
     ax.set_xticks(x)
     ax.set_xticklabels(labels, rotation=90)
+    ax.set_title(col, pad=14)
 
-    for center, g in zip(group_centers, groups):
-        ax.text(center, -0.12 * max(y), g["name"],
-                ha="center", va="top", fontsize=10 * font_scale)
+    # Only draw group labels if explicitly requested AND multiple groups exist
+    show_group_labels = style.get("show_group_labels", False)
+
+    if show_group_labels and len(groups) > 1:
+        for center, g in zip(group_centers, groups):
+            ax.text(
+                center,
+                -0.12 * max(y),
+                g["name"],
+                ha="center",
+                va="top",
+                fontsize=10 * font_scale
+            )
 
     if show_values:
         for b in bars:
@@ -282,6 +293,7 @@ def coef_plot(spec, cfg, name, model=None):
     ax.set_yticklabels(labels)
     ax.set_xlabel("Coefficient estimate")
     ax.invert_yaxis()
+    ax.set_title("Regression Coefficients", pad=12)
 
     ax.grid(axis="x", alpha=0.3)
 
@@ -360,7 +372,7 @@ def pie(df, spec, cfg, name):
         centre = plt.Circle((0, 0), 0.70, fc="white")
         ax.add_artist(centre)
 
-    ax.set_title(col)
+    ax.set_title(col, pad=12)
     ax.axis("equal")
 
     caption = spec.get("caption")
@@ -413,7 +425,7 @@ def likert(df, spec, cfg, name):
         frameon=False
     )
 
-    ax.set_title(col)
+    ax.set_title(col, pad=12)
     ax.set_xlim(0, values.sum())
 
     caption = spec.get("caption")
@@ -467,7 +479,7 @@ def diverging_likert(df, column, spec, cfg, name, group_by=None):
     ax.set_yticks(y)
     ax.set_yticklabels(data.keys())
     ax.set_xlabel("Percentage")
-    ax.set_title(column)
+    ax.set_title(column, pad=12)
     ax.legend()
 
     caption = spec.get("caption")
@@ -532,7 +544,7 @@ def multiselect_profile(df, spec, cfg, name):
             for i, v in enumerate(nums):
                 ax.text(i, v, f"{v:.1f}", ha="center", va="bottom")
 
-    ax.set_title(col)
+    ax.set_title(col, pad=12)
 
     save(fig, cfg["out_dir"], name, cfg["formats"], cfg["dpi"])
 
