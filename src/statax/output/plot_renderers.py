@@ -197,7 +197,16 @@ def categorical_profile(spec, cfg, name, df=None, resolve=None):
     ax.set_ylabel(y_label)
     ax.set_xticks(x)
     ax.set_xticklabels(labels, rotation=90)
-    ax.set_title(col, pad=14)
+
+    title = None
+    if "from_data" in spec:
+        title = col
+    else:
+        # manual mode: use group name if single group
+        if len(groups) == 1:
+            title = groups[0].get("name")
+    if title:
+        ax.set_title(title, pad=14)
 
     # Only draw group labels if explicitly requested AND multiple groups exist
     show_group_labels = style.get("show_group_labels", False)
