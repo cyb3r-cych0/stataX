@@ -2,7 +2,7 @@ def test_categorical_profile_style(tmp_path):
     from statax.output.plot_renderers import categorical_profile
 
     spec = {
-        "y_label": "%",
+        "y_label": "Frequency (%)%",
         "style": {"theme": "grayscale", "show_values": True, "font_scale": 1.1},
         "groups": [
             {"name": "3. Gender", "values": {"Men": 40, "Women": 60}},

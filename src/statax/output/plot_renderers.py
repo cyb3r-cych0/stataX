@@ -133,7 +133,7 @@ def categorical_profile(spec, cfg, name, df=None, resolve=None):
 
         if normalize == "percent":
             values = (counts / counts.sum() * 100).round(2).to_dict()
-            y_label = "%"
+            y_label = "Frequency (%)"
         elif normalize == "count":
             values = counts.to_dict()
             y_label = "Count"
@@ -166,7 +166,7 @@ def categorical_profile(spec, cfg, name, df=None, resolve=None):
     if not groups:
         raise ValueError("categorical_profile requires non-empty 'groups'")
 
-    y_label = spec.get("y_label", "%")
+    y_label = spec.get("y_label", "Frequency (%)")
 
     fig, ax = plt.subplots(figsize=(14, 5))
     for item in ([ax.xaxis.label, ax.yaxis.label] + ax.get_xticklabels()):
@@ -403,7 +403,7 @@ def likert(df, spec, cfg, name):
 
     if normalize:
         values = counts / counts.sum() * 100
-        xlabel = "Percentage"
+        xlabel = "Frequency (%)"
     else:
         values = counts
         xlabel = "Count"
@@ -519,7 +519,7 @@ def multiselect_profile(df, spec, cfg, name):
 
     if normalize == "percent":
         values = counts / counts.sum() * 100
-        xlabel = "Percentage"
+        xlabel = "Frequency (%)"
     else:
         values = counts
         xlabel = "Count"
